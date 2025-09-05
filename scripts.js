@@ -32,10 +32,9 @@ function createPlayer(name, marker) {
 // GameController module
 const GameController = (function () {
     let player1, player2;
-    // const player1 = createPlayer("Player 1", "X");
-    // const player2 = createPlayer("Player 2", "O");
     let currentPlayer = player1;
     let gameOver = false;
+    let scores = { player1: 0, player2: 0 };
 
     //HTML DOM Elements
     const cells = document.querySelectorAll(".cell");
@@ -45,6 +44,14 @@ const GameController = (function () {
     const player1Input = document.getElementById("player1Name");
     const player2Input = document.getElementById("player2Name");
     const playerInputsDiv = document.getElementById("playerInputs");
+    const player1ScoreEl = document.getElementById("player1Score");
+    const player2ScoreEl = document.getElementById("player2Score");
+
+    const winConditions = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
 
     const switchPlayer = () => {
         currentPlayer = currentPlayer === player1 ? player2 : player1;
@@ -61,9 +68,21 @@ const GameController = (function () {
         if (GameBoard.placeMarker(index, currentPlayer.marker)) {
             cells[index].textContent = currentPlayer.marker;
 
-            if (checkWinner(GameBoard.getBoard(), currentPlayer.marker)) {
+            const winningCells = checkWinner(GameBoard.getBoard(), currentPlayer.marker);
+            if (winningCells) {
                 message.textContent = `${currentPlayer.name} wins!`;
                 gameOver = true;
+
+                // highlight winning cells
+                winningCells.forEach(i => cells[i].classList.add("winner"));
+
+                // update score
+                if (currentPlayer === player1) scores.player1++;
+                else scores.player2++;
+
+                player1ScoreEl.textContent = scores.player1;
+                player2ScoreEl.textContent = scores.player2;
+
                 return;
             }
 
@@ -81,19 +100,20 @@ const GameController = (function () {
     };
 
     const checkWinner = (board, marker) => {
-        const winConditions = [
-        [0,1,2], [3,4,5], [6,7,8], // rows
-        [0,3,6], [1,4,7], [2,5,8], // cols
-        [0,4,8], [2,4,6]           // diagonals
-        ];
-        return winConditions.some(condition => 
-            condition.every(index => board[index] === marker)
-        );
+        for (let condition of winConditions) {
+            if (condition.every(index => board[index] === marker)) {
+                return condition; // return winning cells
+            }
+        }
+        return null;
     };
 
     const resetGame = () => {
         GameBoard.resetBoard();
-        cells.forEach(cell => cell.textContent = "-");
+        cells.forEach(cell => {
+            cell.textContent = "-"
+            cell.classList.remove("winner");
+        });
         gameOver = false;
 
         if (player1 && player2) {
@@ -130,6 +150,12 @@ const GameController = (function () {
 
         // Hide the inputs
         playerInputsDiv.classList.add("hidden");
+
+        //Reset Scores
+        scores.player1 = 0;
+        scores.player2 = 0;
+        player1ScoreEl.textContent = scores.player1;
+        player2ScoreEl.textContent = scores.player2;
     });
 
     return { playRound, resetGame };

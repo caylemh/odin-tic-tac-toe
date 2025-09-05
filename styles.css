@@ -38,6 +38,12 @@ body {
   overflow: hidden;
 }
 
+.scoreboard {
+    margin: 20px auto;
+    font-size: 2rem;
+    font-weight: 400;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(3, 104px);
@@ -46,6 +52,11 @@ body {
   gap: 5px;
   margin: 20px auto;
 }
+
+.cell.winner {
+  background-color: #90ee90; /* light green highlight */
+}
+
 
 .cell {
   width: 100px;
