@@ -1,6 +1,7 @@
 body {
   font-family: Arial, sans-serif;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -38,10 +39,14 @@ body {
   overflow: hidden;
 }
 
+#player1Name, #player2Name, #startBtn {
+    margin: 5px auto
+}
+
 .scoreboard {
     margin: 20px auto;
-    font-size: 2rem;
-    font-weight: 400;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .board {
@@ -87,4 +92,52 @@ body {
   font-size: 1rem;
   cursor: pointer;
   border-radius: 5px;
+}
+
+/* ==============================
+   MOBILE RESPONSIVE STYLING
+   ============================== */
+@media (max-width: 500px) {
+  .board {
+    grid-template-columns: repeat(3, 80px);
+    grid-gap: 4px;
+  }
+
+  .cell {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+    border: 1px solid #333;
+  }
+
+  #resetBtn, .player-inputs input, .player-inputs button {
+    font-size: 0.9rem;
+    padding: 6px 8px;
+  }
+
+  #message, .scoreboard {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 350px) {
+  .board {
+    grid-template-columns: repeat(3, 60px);
+    grid-gap: 3px;
+  }
+
+  .cell {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  #resetBtn, .player-inputs input, .player-inputs button {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+  }
+
+  #message, .scoreboard {
+    font-size: 0.9rem;
+  }
 }
