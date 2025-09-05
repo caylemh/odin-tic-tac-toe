@@ -27,6 +27,17 @@ body {
   cursor: pointer;
 }
 
+/* optional smooth hide/show */
+.player-inputs {
+  margin-bottom: 10px;
+  transition: opacity 0.3s, height 0.3s;
+}
+.player-inputs.hidden {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(3, 104px);

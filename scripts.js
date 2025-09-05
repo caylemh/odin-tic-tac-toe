@@ -44,6 +44,7 @@ const GameController = (function () {
     const startBtn = document.getElementById("startBtn");
     const player1Input = document.getElementById("player1Name");
     const player2Input = document.getElementById("player2Name");
+    const playerInputsDiv = document.getElementById("playerInputs");
 
     const switchPlayer = () => {
         currentPlayer = currentPlayer === player1 ? player2 : player1;
@@ -74,6 +75,9 @@ const GameController = (function () {
 
             switchPlayer();
         }
+
+        // Hide the inputs
+        playerInputsDiv.classList.add("hidden");
     };
 
     const checkWinner = (board, marker) => {
@@ -90,9 +94,17 @@ const GameController = (function () {
     const resetGame = () => {
         GameBoard.resetBoard();
         cells.forEach(cell => cell.textContent = "-");
-        currentPlayer = player1;
         gameOver = false;
-        message.textContent = `${currentPlayer.name}'s turn`;
+
+        if (player1 && player2) {
+            currentPlayer = player1;
+            message.textContent = `${currentPlayer.name}'s turn`;
+        } else {
+            message.textContent = "Enter player names and click Start Game";
+        }
+
+        // Show the inputs
+        playerInputsDiv.classList.remove("hidden");
     };
 
     //Event Listeners
@@ -115,6 +127,9 @@ const GameController = (function () {
         cells.forEach(cell => cell.textContent = "-");
         gameOver = false;
         message.textContent = `${currentPlayer.name}'s turn`;
+
+        // Hide the inputs
+        playerInputsDiv.classList.add("hidden");
     });
 
     return { playRound, resetGame };
