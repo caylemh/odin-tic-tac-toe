@@ -2,11 +2,11 @@
 const GameBoard = (() => {
     let board = ["-", "-", "-", "-", "-", "-", "-", "-", "-"]; // private
 
-    const getBoard = () => [...board]; // return a copy
+    const getBoard = () => board; // return a copy
 
-    const placeMarker = (position, marker) => {
-        if (board[position] === "-") {
-            board[position] = marker;
+    const placeMarker = (index, marker) => {
+        if (board[index] === "-") {
+            board[index] = marker;
             return true;
         }
         return false; // position already taken
@@ -16,21 +16,7 @@ const GameBoard = (() => {
         board = ["-", "-", "-", "-", "-", "-", "-", "-", "-"];
     };
 
-    const printBoard = () => {
-        console.log(
-            `${board[0] || "-"} | ${board[1] || "-"} | ${board[2] || "-"}`
-        );
-        console.log("---------");
-        console.log(
-            `${board[3] || "-"} | ${board[4] || "-"} | ${board[5] || "-"}`
-        );
-        console.log("---------");
-        console.log(
-            `${board[6] || "-"} | ${board[7] || "-"} | ${board[8] || "-"}`
-        );
-    };
-
-    return { getBoard, placeMarker, resetBoard, printBoard };
+    return { getBoard, placeMarker, resetBoard};
 })();
 
 
@@ -45,42 +31,48 @@ function createPlayer(name, marker) {
 
 // GameController module
 const GameController = (function () {
-    const player1 = createPlayer("Player 1", "X");
-    const player2 = createPlayer("Player 2", "O");
+    let player1, player2;
+    // const player1 = createPlayer("Player 1", "X");
+    // const player2 = createPlayer("Player 2", "O");
     let currentPlayer = player1;
     let gameOver = false;
 
+    //HTML DOM Elements
+    const cells = document.querySelectorAll(".cell");
+    const message = document.getElementById("message");
+    const resetBtn = document.getElementById("resetBtn");
+    const startBtn = document.getElementById("startBtn");
+    const player1Input = document.getElementById("player1Name");
+    const player2Input = document.getElementById("player2Name");
+
     const switchPlayer = () => {
         currentPlayer = currentPlayer === player1 ? player2 : player1;
-        console.log(`It's now ${currentPlayer.name}'s turn.`);
+        message.textContent = `${currentPlayer.name}'s turn`;
     };
 
     const playRound = (index) => {
 
         if (gameOver) {
-            console.log("Game over. Please reset to play again.");
+            message.textContent = "Game over. Please reset to play again.";
             return;
         }
         
         if (GameBoard.placeMarker(index, currentPlayer.marker)) {
-            console.log(`${currentPlayer.name} placed ${currentPlayer.marker} at position ${index}`);
-            console.log(GameBoard.printBoard());
+            cells[index].textContent = currentPlayer.marker;
 
             if (checkWinner(GameBoard.getBoard(), currentPlayer.marker)) {
-                console.log(`${currentPlayer.name} wins!`);
+                message.textContent = `${currentPlayer.name} wins!`;
                 gameOver = true;
                 return;
             }
 
             if (!GameBoard.getBoard().includes("-")) {
-                console.log("It's a tie!");
+                message.textContent = "It's a tie!";
                 gameOver = true;
                 return;
             }
 
             switchPlayer();
-        } else {
-            console.log("Invalid move. Try again!");
         }
     };
 
@@ -97,11 +89,33 @@ const GameController = (function () {
 
     const resetGame = () => {
         GameBoard.resetBoard();
+        cells.forEach(cell => cell.textContent = "-");
         currentPlayer = player1;
         gameOver = false;
-        console.log("Game reset. Let's play!");
-        GameBoard.printBoard();
+        message.textContent = `${currentPlayer.name}'s turn`;
     };
+
+    //Event Listeners
+    cells.forEach(cell => {
+        cell.addEventListener("click", () => {
+            const index = parseInt(cell.dataset.index);
+            playRound(index);
+        });
+    });
+
+    resetBtn.addEventListener("click", resetGame);
+
+    startBtn.addEventListener("click", () => {
+        const name1 = player1Input.value.trim() || "Player X";
+        const name2 = player2Input.value.trim() || "Player O";
+        player1 = createPlayer(name1, "X");
+        player2 = createPlayer(name2, "O");
+        currentPlayer = player1;
+        GameBoard.resetBoard();
+        cells.forEach(cell => cell.textContent = "-");
+        gameOver = false;
+        message.textContent = `${currentPlayer.name}'s turn`;
+    });
 
     return { playRound, resetGame };
 })();
